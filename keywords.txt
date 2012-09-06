@@ -1,0 +1,28 @@
+#######################################
+# Syntax Coloring Map SoftPWM
+#######################################
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+SoftPWM	KEYWORD1
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+begin	KEYWORD2
+set	KEYWORD2
+size	KEYWORD2
+brightnessLevels	KEYWORD2
+allOff	KEYWORD2
+update	KEYWORD2
+printInterruptLoad	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+SOFTPWM_DEFINE_PINMODE	LITERAL1
+SOFTPWM_DEFINE_CHANNEL	LITERAL1
+SOFTPWM_DEFINE_CHANNEL_INVERT	LITERAL1
+SOFTPWM_DEFINE_OBJECT_WITH_BRIGHTNESS_LEVELS	LITERAL1
+SOFTPWM_DEFINE_OBJECT	LITERAL1
+SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_BRIGHTNESS_LEVELS	LITERAL1
+SOFTPWM_DEFINE_EXTERN_OBJECT	LITERAL1
