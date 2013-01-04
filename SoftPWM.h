@@ -152,6 +152,7 @@ public:
    * http://www.elcojacobs.com/shiftpwm/ */
   void printInterruptLoad()
   {
+    #ifdef __DEBUG_SOFTPWM__
     unsigned long time1, time2;
 
     bitSet( TIMSK1, OCIE1A ); // enable interrupt
@@ -183,6 +184,7 @@ public:
     Serial.println( brightnessLevels() );
     
     bitSet( TIMSK1, OCIE1A ); // enable interrupt again
+	#endif
   }
 
 private:
