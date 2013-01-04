@@ -184,7 +184,7 @@ public:
     Serial.println( brightnessLevels() );
     
     bitSet( TIMSK1, OCIE1A ); // enable interrupt again
-	#endif
+    #endif
   }
 
 private:
