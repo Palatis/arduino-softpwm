@@ -1,3 +1,7 @@
+/* define this before including SoftPWM.h for printInterruptLoad()
+ * to work. */
+#define __DEBUG_SOFTPWM__ 1
+
 #include <SoftPWM.h>
 
 /* pins_arduino.h defines the pin-port/bit mapping as PROGMEM so
