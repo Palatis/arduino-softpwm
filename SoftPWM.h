@@ -107,13 +107,8 @@ public:
     /* the setup of timer1 is stolen from ShiftPWM :-P
      * http://www.elcojacobs.com/shiftpwm/ */
     asm volatile ("/************ timer setup begin ************/");
-    bitSet(TCCR1B,WGM12);
-    bitClear(TCCR1B,WGM13);
-    bitClear(TCCR1A,WGM11);
-    bitClear(TCCR1A,WGM10);
-    bitSet(TCCR1B,CS10);
-    bitClear(TCCR1B,CS11);
-    bitClear(TCCR1B,CS12);
+    TCCR1A = 0b00000000;
+    TCCR1B = 0b00001001;
     OCR1A = (F_CPU - hertz * brightnessLevels() / 2) / (hertz * brightnessLevels());
     bitSet(TIMSK1,OCIE1A);
     asm volatile ("/************ timer setup end ************/");
