@@ -63,7 +63,7 @@ struct bitWriteStaticExpander
 
   void operator() ( uint8_t const &count, uint8_t const * const &channels ) const
   {
-    bitWriteStatic< channel >( count < channels[ channel ] );
+    bitWriteStatic< channel >( (count + channel) < channels[ channel ] );
     bitWriteStaticExpander< channel - 1 >()( count, channels );
   }
 };
