@@ -32,11 +32,11 @@
 #if defined(__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
 #define SOFTPWM_DEFINE_OBJECT_WITH_BRIGHTNESS_LEVELS( CHANNEL_CNT, BRIGHTNESS_LEVELS ) \
   CSoftPWM< CHANNEL_CNT, BRIGHTNESS_LEVELS > SoftPWM; \
-  ISR(TIM1_COMPA_vect) { sei(); SoftPWM.update(); }
+  ISR(TIM1_COMPA_vect) { interrupts(); SoftPWM.update(); }
 #else
 #define SOFTPWM_DEFINE_OBJECT_WITH_BRIGHTNESS_LEVELS( CHANNEL_CNT, BRIGHTNESS_LEVELS ) \
   CSoftPWM< CHANNEL_CNT, BRIGHTNESS_LEVELS > SoftPWM; \
-  ISR(TIMER1_COMPA_vect) { sei(); SoftPWM.update(); }
+  ISR(TIMER1_COMPA_vect) { interrupts(); SoftPWM.update(); }
 #endif
 
 #define SOFTPWM_DEFINE_OBJECT( CHANNEL_CNT ) \
@@ -99,7 +99,7 @@ public:
   {
     asm volatile ("/************ pinModeStaticExpander begin ************/");
     uint8_t oldSREG = SREG;
-    cli();
+    noInterrupts();
     pinModeStaticExpander< num_channels - 1 >()( OUTPUT );
     SREG = oldSREG;
     asm volatile ("/************ pinModeStaticExpander end ************/");
@@ -128,7 +128,7 @@ public:
   {
     asm volatile ( "/********** CSoftPWM::allOff() begin **********/" );
     uint8_t oldSREG = SREG;
-    cli();
+    noInterrupts();
     for ( int i = 0; i < num_channels; ++i )
       _channels[i] = 0;
     bitWriteStaticExpander< num_channels - 1 >()( false );
