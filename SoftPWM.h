@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 
+//uncomment this line to add a 1 PWM clock cycle delay between outputs to prevent large in-rush currents
+//#define SOFTPWM_OUTPUT_DELAY
+
 /* helper macros */
 #define SOFTPWM_DEFINE_PINMODE( CHANNEL, PMODE, PORT, BIT ) \
   template < > \
@@ -63,7 +66,11 @@ struct bitWriteStaticExpander
 
   void operator() ( uint8_t const &count, uint8_t const * const &channels ) const
   {
+#ifdef SOFTPWM_OUTPUT_DELAY
     bitWriteStatic< channel >( (count + channel) < channels[ channel ] );
+#else
+    bitWriteStatic< channel >( count < channels[ channel ] );
+#endif
     bitWriteStaticExpander < channel - 1 > ()( count, channels );
   }
 };
