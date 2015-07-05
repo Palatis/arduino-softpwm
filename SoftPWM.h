@@ -22,7 +22,7 @@
   inline void bitWriteStatic< CHANNEL >( bool const value ) \
   { bitWrite( PORT, BIT, value ); } \
   SOFTPWM_DEFINE_PINMODE( CHANNEL, PMODE, PORT, BIT )
-  
+
 #define SOFTPWM_DEFINE_CHANNEL_INVERT( CHANNEL, PMODE, PORT, BIT ) \
   template < > \
   inline void bitWriteStatic< CHANNEL >( bool const value ) \
@@ -44,7 +44,7 @@
 
 #define SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_BRIGHTNESS_LEVELS( CHANNEL_CNT, BRIGHTNESS_LEVELS ) \
   extern CSoftPWM< CHANNEL_CNT, BRIGHTNESS_LEVELS > SoftPWM;
-  
+
 #define SOFTPWM_DEFINE_EXTERN_OBJECT( CHANNEL_CNT ) \
   SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_BRIGHTNESS_LEVELS( CHANNEL_CNT, 0 )
 
@@ -58,18 +58,18 @@ struct bitWriteStaticExpander
   void operator() ( bool value ) const
   {
     bitWriteStatic< channel >( value );
-    bitWriteStaticExpander< channel - 1 >()( value );
+    bitWriteStaticExpander < channel - 1 > ()( value );
   }
 
   void operator() ( uint8_t const &count, uint8_t const * const &channels ) const
   {
     bitWriteStatic< channel >( (count + channel) < channels[ channel ] );
-    bitWriteStaticExpander< channel - 1 >()( count, channels );
+    bitWriteStaticExpander < channel - 1 > ()( count, channels );
   }
 };
 
 template < >
-struct bitWriteStaticExpander< -1 >
+struct bitWriteStaticExpander < -1 >
 {
   void operator() ( bool ) const {}
   void operator() ( uint8_t const &, uint8_t const * const & ) const {}
@@ -81,12 +81,12 @@ struct pinModeStaticExpander
   void operator() ( uint8_t const mode ) const
   {
     pinModeStatic< channel >( mode );
-    pinModeStaticExpander< channel - 1 >()( mode );
+    pinModeStaticExpander < channel - 1 > ()( mode );
   }
 };
 
 template < >
-struct pinModeStaticExpander< -1 >
+struct pinModeStaticExpander < -1 >
 {
   void operator() ( uint8_t const mode ) const {}
 };
@@ -94,105 +94,110 @@ struct pinModeStaticExpander< -1 >
 template < int num_channels, int num_brightness_levels >
 class CSoftPWM
 {
-public:
-  void begin(long hertz)
-  {
-    asm volatile ("/************ pinModeStaticExpander begin ************/");
-    uint8_t oldSREG = SREG;
-    noInterrupts();
-    pinModeStaticExpander< num_channels - 1 >()( OUTPUT );
-    SREG = oldSREG;
-    asm volatile ("/************ pinModeStaticExpander end ************/");
+  public:
+    void begin(long hertz)
+    {
+      asm volatile ("/************ pinModeStaticExpander begin ************/");
+      uint8_t oldSREG = SREG;
+      noInterrupts();
+      pinModeStaticExpander < num_channels - 1 > ()( OUTPUT );
+      SREG = oldSREG;
+      asm volatile ("/************ pinModeStaticExpander end ************/");
 
-    /* the setup of timer1 is stolen from ShiftPWM :-P
-     * http://www.elcojacobs.com/shiftpwm/ */
-    asm volatile ("/************ timer setup begin ************/");
-    TCCR1A = 0b00000000;
-    TCCR1B = 0b00001001;
-    OCR1A = (F_CPU - hertz * brightnessLevels() / 2) / (hertz * brightnessLevels());
-    bitSet(TIMSK1,OCIE1A);
-    asm volatile ("/************ timer setup end ************/");
+      /* the setup of timer1 is stolen from ShiftPWM :-P
+       * http://www.elcojacobs.com/shiftpwm/ */
+      asm volatile ("/************ timer setup begin ************/");
+      TCCR1A = 0b00000000;
+      TCCR1B = 0b00001001;
+      OCR1A = (F_CPU - hertz * brightnessLevels() / 2) / (hertz * brightnessLevels());
+      bitSet(TIMSK1, OCIE1A);
+      asm volatile ("/************ timer setup end ************/");
 
-    _count = 0;
-  }
-
-  void set( int channel_idx, uint8_t value )
-  {
-    _channels[ channel_idx ] = value;
-  }
-
-  size_t size() const { return num_channels; }
-  int brightnessLevels() const { return num_brightness_levels ? num_brightness_levels : 256; }
-
-  void allOff()
-  {
-    asm volatile ( "/********** CSoftPWM::allOff() begin **********/" );
-    uint8_t oldSREG = SREG;
-    noInterrupts();
-    for ( int i = 0; i < num_channels; ++i )
-      _channels[i] = 0;
-    bitWriteStaticExpander< num_channels - 1 >()( false );
-    SREG = oldSREG;
-    asm volatile ( "/********** CSoftPWM::allOff() end **********/" );
-  }
-  
-  /* this function cannot be private because the ISR uses it, and I have
-   * no idea about how to make friends with ISR. :-( */
-  void update() __attribute__((always_inline))
-  {
-    asm volatile ( "/********** CSoftPWM::update() begin **********/" );
-    uint8_t count = _count;
-    bitWriteStaticExpander< num_channels - 1 >()( count, _channels );
-    ++_count;
-    if ( _count == brightnessLevels() )
       _count = 0;
-    asm volatile ( "/********** CSoftPWM::update() end **********/" );
-  }
+    }
 
-  /* this function is stolen from ShiftPWM :-P
-   * http://www.elcojacobs.com/shiftpwm/ */
-  void printInterruptLoad()
-  {
-    #ifdef __DEBUG_SOFTPWM__
-    unsigned long time1, time2;
+    void set( int channel_idx, uint8_t value )
+    {
+      _channels[ channel_idx ] = value;
+    }
 
-    bitSet( TIMSK1, OCIE1A ); // enable interrupt
-    time1 = micros();
-    delayMicroseconds( 5000 );
-    time1 = micros() - time1;
+    size_t size() const {
+      return num_channels;
+    }
+    int brightnessLevels() const {
+      return num_brightness_levels ? num_brightness_levels : 256;
+    }
 
-    bitClear( TIMSK1, OCIE1A ); // disable interrupt
-    time2 = micros();
-    delayMicroseconds( 5000 );
-    time2 = micros() - time2;
+    void allOff()
+    {
+      asm volatile ( "/********** CSoftPWM::allOff() begin **********/" );
+      uint8_t oldSREG = SREG;
+      noInterrupts();
+      for ( int i = 0; i < num_channels; ++i )
+        _channels[i] = 0;
+      bitWriteStaticExpander < num_channels - 1 > ()( false );
+      SREG = oldSREG;
+      asm volatile ( "/********** CSoftPWM::allOff() end **********/" );
+    }
 
-    double load = static_cast< double >(time1 - time2) / time1;
-    double interrupt_frequency = static_cast< double >(F_CPU) / (OCR1A + 1);
-    double cycles_per_interrupt = load * F_CPU / interrupt_frequency;
+    /* this function cannot be private because the ISR uses it, and I have
+     * no idea about how to make friends with ISR. :-( */
+    void update() __attribute__((always_inline))
+    {
+      asm volatile ( "/********** CSoftPWM::update() begin **********/" );
+      uint8_t count = _count;
+      bitWriteStaticExpander < num_channels - 1 > ()( count, _channels );
+      ++_count;
+      if ( _count == brightnessLevels() )
+        _count = 0;
+      asm volatile ( "/********** CSoftPWM::update() end **********/" );
+    }
 
-    Serial.println( F("SoftPWM::printInterruptLoad():") );
-    Serial.print( F("  Load of interrupt: ") );
-    Serial.println( load, 10 );
-    Serial.print( F("  Clock cycles per interrupt: ") );
-    Serial.println( cycles_per_interrupt );
-    Serial.print( F("  Interrupt frequency: ") );
-    Serial.print( interrupt_frequency );
-    Serial.println( F(" Hz") );
-    Serial.print( F("  PWM frequency: ") );
-    Serial.print( interrupt_frequency / brightnessLevels() );
-    Serial.println( F(" Hz") );
-    Serial.print( F("  Brightness levels: ") );
-    Serial.println( brightnessLevels() );
-    
-    bitSet( TIMSK1, OCIE1A ); // enable interrupt again
-    #endif
-  }
+    /* this function is stolen from ShiftPWM :-P
+     * http://www.elcojacobs.com/shiftpwm/ */
+    void printInterruptLoad()
+    {
+#ifdef __DEBUG_SOFTPWM__
+      unsigned long time1, time2;
 
-private:
-  static void _timerCallback();
+      bitSet( TIMSK1, OCIE1A ); // enable interrupt
+      time1 = micros();
+      delayMicroseconds( 5000 );
+      time1 = micros() - time1;
 
-  uint8_t _channels[ num_channels ];
-  uint8_t _count;
+      bitClear( TIMSK1, OCIE1A ); // disable interrupt
+      time2 = micros();
+      delayMicroseconds(5000);
+      time2 = micros() - time2;
+
+      double load = static_cast< double >(time1 - time2) / time1;
+      double interrupt_frequency = static_cast< double >(F_CPU) / (OCR1A + 1);
+      double cycles_per_interrupt = load * F_CPU / interrupt_frequency;
+
+      Serial.println( F("SoftPWM::printInterruptLoad():") );
+      Serial.print( F("  Load of interrupt: ") );
+      Serial.println( load, 10 );
+      Serial.print( F("  Clock cycles per interrupt: ") );
+      Serial.println( cycles_per_interrupt );
+      Serial.print( F("  Interrupt frequency: ") );
+      Serial.print( interrupt_frequency );
+      Serial.println( F(" Hz") );
+      Serial.print( F("  PWM frequency: ") );
+      Serial.print( interrupt_frequency / brightnessLevels() );
+      Serial.println( F(" Hz") );
+      Serial.print( F("  Brightness levels: ") );
+      Serial.println( brightnessLevels() );
+
+      bitSet( TIMSK1, OCIE1A );  // enable interrupt again
+#endif
+    }
+
+  private:
+    static void _timerCallback();
+
+    uint8_t _channels[ num_channels ];
+    uint8_t _count;
 };
 
 #endif
+
