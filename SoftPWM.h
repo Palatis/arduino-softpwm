@@ -131,7 +131,7 @@ class CSoftPWM
     size_t size() const {
       return num_channels;
     }
-    int brightnessLevels() const {
+    unsigned int brightnessLevels() const {
       return num_brightness_levels ? num_brightness_levels : 256;
     }
 
