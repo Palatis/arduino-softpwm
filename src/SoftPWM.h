@@ -175,8 +175,6 @@ class CSoftPWM {
     /* this function is stolen from ShiftPWM :-P
        http://www.elcojacobs.com/shiftpwm/ */
     void printInterruptLoad() {
-#ifdef __DEBUG_SOFTPWM__
-      Serial.println(__DEBUG_SOFTPWM__);
       unsigned long time1, time2;
 
       bitSet(TIMSK1, OCIE1A); // enable interrupt
@@ -208,7 +206,6 @@ class CSoftPWM {
       Serial.println(brightnessLevels());
 
       bitSet(TIMSK1, OCIE1A);  // enable interrupt again
-#endif
     }
 
   private:
