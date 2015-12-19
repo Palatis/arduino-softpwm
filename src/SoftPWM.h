@@ -2,8 +2,6 @@
 #define _SOFTPWM_H_
 
 #include <Arduino.h>
-// uncomment the following line to add a 1 PWM clock cycle delay between outputs to prevent large in-rush currents
-//#define SOFTPWM_OUTPUT_DELAY
 
 // helper macros
 #define SOFTPWM_DEFINE_PINMODE(CHANNEL, PMODE, PORT, BIT) \
