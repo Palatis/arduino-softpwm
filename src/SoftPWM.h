@@ -117,9 +117,9 @@ struct pinModeStaticExpander < -1 > {
 template <int num_channels, int num_brightness_levels>
 class CSoftPWM {
   public:
-    void begin(long hertz) {
+    void begin(const long hertz) {
       asm volatile ("/************ pinModeStaticExpander begin ************/");
-      uint8_t oldSREG = SREG;
+      const uint8_t oldSREG = SREG;
       noInterrupts();
       pinModeStaticExpander < num_channels - 1 > ()( OUTPUT );
       SREG = oldSREG;
@@ -137,7 +137,7 @@ class CSoftPWM {
       _count = 0;
     }
 
-    void set(int channel_idx, uint8_t value) {
+    void set(const int channel_idx, const uint8_t value) {
       _channels[channel_idx] = value;
     }
 
@@ -151,7 +151,7 @@ class CSoftPWM {
 
     void allOff() {
       asm volatile ("/********** CSoftPWM::allOff() begin **********/");
-      uint8_t oldSREG = SREG;
+      const uint8_t oldSREG = SREG;
       noInterrupts();
       for (int i = 0; i < num_channels; ++i)
         _channels[i] = 0;
@@ -164,7 +164,7 @@ class CSoftPWM {
        no idea about how to make friends with ISR. :-( */
     void update() __attribute__((always_inline)) {
       asm volatile ("/********** CSoftPWM::update() begin **********/");
-      uint8_t count = _count;
+      const uint8_t count = _count;
       bitWriteStaticExpander < num_channels - 1 > ()(count, _channels);
       ++_count;
       if (_count == brightnessLevels())
@@ -189,9 +189,9 @@ class CSoftPWM {
       delayMicroseconds(5000);
       time2 = micros() - time2;
 
-      double load = static_cast<double>(time1 - time2) / time1;
-      double interrupt_frequency = static_cast<double>(F_CPU) / (OCR1A + 1);
-      double cycles_per_interrupt = load * F_CPU / interrupt_frequency;
+      const double load = static_cast<double>(time1 - time2) / time1;
+      const double interrupt_frequency = static_cast<double>(F_CPU) / (OCR1A + 1);
+      const double cycles_per_interrupt = load * F_CPU / interrupt_frequency;
 
       Serial.println(F("SoftPWM::printInterruptLoad():"));
       Serial.print(F("  Load of interrupt: "));
