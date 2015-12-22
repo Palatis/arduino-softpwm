@@ -61,18 +61,18 @@ SOFTPWM_DEFINE_CHANNEL(19, DDRC, PORTC, PORTC5);  //Arduino pin A5
 */
 
 /* Here you make an instance of desired channel counts you want
-   with the default 256 brightness levels (0 ~ 255). */
+   with the default 256 PWM levels (0 ~ 255). */
 //SOFTPWM_DEFINE_OBJECT(20);
 
-/* Or you can make one with only 100 brightness levels (0 ~ 99).
-   By using less brightness levels, you may be able to use higher
+/* Or you can make one with only 100 PWM levels (0 ~ 99).
+   By using less PWM levels, you may be able to use higher
    pwm frequencies. */
-SOFTPWM_DEFINE_OBJECT_WITH_BRIGHTNESS_LEVELS(20, 100);
+SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS(20, 100);
 
 /* If you want to use the SoftPWM object outside where it's defined,
    add the following line to the file. */
 //SOFTPWM_DEFINE_EXTERN_OBJECT(16);
-SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_BRIGHTNESS_LEVELS(20, 100);
+SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_PWM_LEVELS(20, 100);
 
 void setup() {
   Serial.begin(19200);
@@ -86,24 +86,21 @@ void setup() {
 
 static volatile uint8_t v = 0;
 void loop() {
-  long nextMillis = 0;
-
   for (uint8_t i = 0; i < Palatis::SoftPWM.size(); ++i) {
     Serial.print(micros());
     Serial.print(" loop(): ");
     Serial.println(i);
 
-    unsigned long const WAIT = 1000000 / Palatis::SoftPWM.brightnessLevels() / 2;
+    unsigned long const WAIT = 1000000 / Palatis::SoftPWM.PWMlevels() / 2;
     unsigned long nextMicros = 0;
-    for (int v = 0; v <= Palatis::SoftPWM.brightnessLevels() - 1; ++v) {
+    for (int v = 0; v < Palatis::SoftPWM.PWMlevels() - 1; ++v) {
       while (micros() < nextMicros);
       nextMicros = micros() + WAIT;
       Palatis::SoftPWM.set(i, v);
     }
-    for (int v = Palatis::SoftPWM.brightnessLevels() - 1; v >= 0; --v) {
+    for (int v = Palatis::SoftPWM.PWMlevels() - 1; v >= 0; --v) {
       while (micros() < nextMicros);
       nextMicros = micros() + WAIT;
-      Palatis::SoftPWM.set(i, v);
     }
   }
 }
