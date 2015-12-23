@@ -112,7 +112,7 @@ struct pinModeStaticExpander < -1 > {
   void operator() (uint8_t const mode) const {}
 };
 
-template <int num_channels, int num_PWM_levels>
+template <unsigned int num_channels, unsigned int num_PWM_levels>
 class CSoftPWM {
   public:
     void begin(const unsigned long hertz) {
