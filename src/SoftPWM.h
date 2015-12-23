@@ -207,8 +207,6 @@ class CSoftPWM {
     }
 
   private:
-    static void _timerCallback();
-
     uint8_t _channels[num_channels];
     uint8_t _count;
 };
