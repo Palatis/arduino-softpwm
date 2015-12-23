@@ -115,7 +115,7 @@ struct pinModeStaticExpander < -1 > {
 template <int num_channels, int num_PWM_levels>
 class CSoftPWM {
   public:
-    void begin(const long hertz) {
+    void begin(const unsigned long hertz) {
       asm volatile ("/************ pinModeStaticExpander begin ************/");
       const uint8_t oldSREG = SREG;
       noInterrupts();
