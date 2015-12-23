@@ -42,7 +42,7 @@ See **File > Examples > arduino-softpwm > SoftPWM_example** for demonstration of
 
 `SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_PWM_LEVELS(CHANNEL_CNT, PWM_LEVELS)` - Add this if you want to use the SoftPWM object outside where it's defined. See `SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS()` for description of parameters.
 
-`SoftPWM.begin(hertz)` - Initialize softPWM. All channels will momentarily turn on when this function is called if `SOFTPWM_DEFINE_CHANNEL_INVERT()` is used.
+`SoftPWM.begin(hertz)` - Initialize softPWM. All pins configured with `SOFTPWM_DEFINE_CHANNEL_INVERT()` will momentarily go LOW when this function is called.
 - Parameter: **hertz** - The PWM frequency. Setting the value too high will cause incorrect operation. Too low will cause a visible flicker.
   - Type: long
 
@@ -67,9 +67,10 @@ See **File > Examples > arduino-softpwm > SoftPWM_example** for demonstration of
 
 <a id="troubleshooting"></a>
 #### Troubleshooting
-- LEDs flicker
-  - The PWM frequency set in `SoftPWM.begin()` is too low. Flickering caused by low PWM frequency is especially noticeable when the LED is moving relative to the viewer.
-  - The interrupt load is too high. Use `SoftPWM.printInterruptLoad()` to determine the interrupt load. You can decrease the interrupt load by using less PWM levels in `SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS()` or setting the PWM frequency lower in `SoftPWM.begin()`.
+- LEDs have a visible flicker, especially noticeable when the LED is moving relative to the viewer.
+  - The PWM frequency set in `SoftPWM.begin()` is too low. Use `SoftPWM.printInterruptLoad()` to determine the optimum PWM frequency. You may be able to achieve a higher PWM frequency by setting less PWM levels with `SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS()` or `SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_PWM_LEVELS()`.
+- Erratic PWM operation
+  - The interrupt load is too high. Use `SoftPWM.printInterruptLoad()` to determine the interrupt load. You can decrease the interrupt load by setting less PWM levels with `SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS()` or `SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_PWM_LEVELS()` or setting the PWM frequency lower in `SoftPWM.begin()`.
 - LED brightness changes between low brightness PWM values are larger than at brighter PWM values.
-  - If possible, use more PWM levels or never allow the LED to get dimmer than the level below which the difference between PWM levels is too distinct.
+  - This is caused by the way LEDs work and is not caused by a problem with the library. If possible, use more PWM levels or never allow the LED to get dimmer than the level below which the difference between PWM levels is too distinct.
 
