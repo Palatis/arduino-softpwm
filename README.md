@@ -5,8 +5,6 @@ Software PWM library for Arduino
 
 AVR microcontrollers provide hardware PWM on some pins but if you need PWM on other pins then it must be implemented in software. This library provides easy and efficient software PWM on any pin. Each channel can be set to a different PWM duty cycle.
 
-This is a fork of https://github.com/Palatis/arduino-softpwm
-
 
 <a id="installation"></a>
 #### Installation
@@ -42,8 +40,8 @@ See **File > Examples > arduino-softpwm > SoftPWM_example** for demonstration of
 
 `SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_PWM_LEVELS(CHANNEL_CNT, PWM_LEVELS)` - Add this if you want to use the SoftPWM object outside where it's defined. See `SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS()` for description of parameters.
 
-`SoftPWM.begin(hertz)` - Initialize softPWM. All pins configured with `SOFTPWM_DEFINE_CHANNEL_INVERT()` will momentarily go LOW when this function is called.
-- Parameter: **hertz** - The PWM frequency. Setting the value too high will cause incorrect operation. Too low will cause a visible flicker.
+`SoftPWM.begin(hertz)` - Initialize SoftPWM.
+- Parameter: **hertz** - The PWM frequency. Setting the value too high will cause incorrect operation, too low will cause a visible flicker.
   - Type: long
 
 `SoftPWM.printInterruptLoad()` - Prints diagnostic information to the serial monitor. This can be used to find the optimal PWM frequency by setting different PWM frequency values in begin() and then checking the resulting interrupt load. Calling this function will momentarily turn off the PWM on all channels.
@@ -73,4 +71,3 @@ See **File > Examples > arduino-softpwm > SoftPWM_example** for demonstration of
   - The interrupt load is too high. Use `SoftPWM.printInterruptLoad()` to determine the interrupt load. You can decrease the interrupt load by setting less PWM levels with `SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS()` or `SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_PWM_LEVELS()` or setting the PWM frequency lower in `SoftPWM.begin()`.
 - LED brightness changes between low brightness PWM values are larger than at brighter PWM values.
   - This is caused by the way LEDs work and is not caused by a problem with the library. If possible, use more PWM levels or never allow the LED to get dimmer than the level below which the difference between PWM levels is too distinct.
-
