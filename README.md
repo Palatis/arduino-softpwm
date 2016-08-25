@@ -19,6 +19,10 @@ AVR microcontrollers provide hardware PWM on some pins but if you need PWM on ot
 #### Usage
 See **File > Examples > arduino-softpwm > SoftPWM_example** for demonstration of library usage.
 
+Everything in this library except for preprocessor defines are wrapped in `namespace Palatis {}`, so if your compiler blames you about symbol not found, try add `Palatis::` before that thing. For example, `Palatis::SoftPWM.size()`.
+
+Alternatively, you can add `using namespace Palatis;` at the top of the source file to import everything under the `Palatis` namespace, this might be convenient if you're using my other libraries.
+
 `#define SOFTPWM_OUTPUT_DELAY` - Add this line above `#include <SoftPWM.h>` for a 1 PWM clock cycle delay between outputs to prevent large in-rush currents.
 
 `SOFTPWM_DEFINE_CHANNEL(CHANNEL, PMODE, PORT, BIT)` - Configure a pin for software PWM use. Consult the datasheet for your microcontroller for the appropriate `PORT` and `BIT` values for the physical pin. This information is shown in the pinout diagram, for example: [ATmega328P datasheet](http://www.atmel.com/Images/Atmel-8271-8-bit-AVR-Microcontroller-ATmega48A-48PA-88A-88PA-168A-168PA-328-328P_datasheet_Summary.pdf) **Figure 1-1** found on page 3. If you want to determine the Arduino pin assigned to the physical pin http://www.pighixxx.com/test/pinoutspg/boards/ provides this information for the most popular Arduino boards or you can look at the pins_arduino.h file in the **variant** folder used by your board.
