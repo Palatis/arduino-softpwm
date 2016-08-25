@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 /* Define this before including SoftPWM.h for printInterruptLoad()
    to work. */
 #define __DEBUG_SOFTPWM__ 1
@@ -69,32 +71,32 @@ void setup() {
   Serial.begin(19200);
 
   // begin with 60hz pwm frequency
-  SoftPWM.begin(60);
+  Palatis::SoftPWM.begin(60);
 
   // print interrupt load for diagnostic purposes
-  SoftPWM.printInterruptLoad();
+  Palatis::SoftPWM.printInterruptLoad();
 }
 
 static volatile uint8_t v = 0;
 void loop() {
   long nextMillis = 0;
 
-  for (uint8_t i = 0; i < SoftPWM.size(); ++i) {
+  for (uint8_t i = 0; i < Palatis::SoftPWM.size(); ++i) {
     Serial.print(micros());
     Serial.print(" loop(): ");
     Serial.println(i);
 
-    unsigned long const WAIT = 1000000 / SoftPWM.brightnessLevels() / 2;
+    unsigned long const WAIT = 1000000 / Palatis::SoftPWM.brightnessLevels() / 2;
     unsigned long nextMicros = 0;
-    for (int v = 0; v <= SoftPWM.brightnessLevels() - 1; ++v) {
+    for (int v = 0; v <= Palatis::SoftPWM.brightnessLevels() - 1; ++v) {
       while (micros() < nextMicros);
       nextMicros = micros() + WAIT;
-      SoftPWM.set(i, v);
+      Palatis::SoftPWM.set(i, v);
     }
-    for (int v = SoftPWM.brightnessLevels() - 1; v >= 0; --v) {
+    for (int v = Palatis::SoftPWM.brightnessLevels() - 1; v >= 0; --v) {
       while (micros() < nextMicros);
       nextMicros = micros() + WAIT;
-      SoftPWM.set(i, v);
+      Palatis::SoftPWM.set(i, v);
     }
   }
 }

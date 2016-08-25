@@ -4,6 +4,7 @@
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
+Palatis	KEYWORD1
 SoftPWM	KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -27,4 +28,3 @@ SOFTPWM_DEFINE_OBJECT	LITERAL1
 SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_BRIGHTNESS_LEVELS	LITERAL1
 SOFTPWM_DEFINE_EXTERN_OBJECT	LITERAL1
 __DEBUG_SOFTPWM__	LITERAL1
-
