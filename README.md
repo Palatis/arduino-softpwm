@@ -8,7 +8,7 @@ AVR microcontrollers provide hardware PWM on some pins but if you need PWM on ot
 
 <a id="installation"></a>
 #### Installation
-- Download the most recent version here: https://github.com/per1234/arduino-softpwm/archive/dev.zip
+- Download the most recent version here: https://github.com/Palatis/arduino-softpwm/archive/master.zip
 - Using Arduino IDE 1.0.x:
   - Sketch > Import Library... > Add Library... > select the downloaded file > Open
 - Using Arduino IDE 1.5+:
