@@ -82,6 +82,9 @@
     Palatis::SoftPWM.update(); \
   }
 #else
+	#if defined (__AVR_ATmega8__) || defined (__AVR_ATmega8A__)
+		#define TIMSK1	TIMSK
+	#endif
 #define SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS(CHANNEL_CNT, PWM_LEVELS) \
   namespace Palatis { \
     CSoftPWM<CHANNEL_CNT, PWM_LEVELS> SoftPWM; \
