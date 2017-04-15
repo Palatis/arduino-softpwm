@@ -7,7 +7,6 @@ AVR microcontrollers provide hardware PWM on some pins but if you need PWM on ot
 
 This library is licensed under [BSD3](https://opensource.org/licenses/BSD-3-Clause)
 
-<a id="installation"/>
 #### Installation
 - Download the most recent version here: https://github.com/Palatis/arduino-softpwm/archive/master.zip
 - Using Arduino IDE 1.0.x:
@@ -16,7 +15,6 @@ This library is licensed under [BSD3](https://opensource.org/licenses/BSD-3-Clau
   - Sketch > Include Library > Add ZIP Library... > select the downloaded file > Open
 
 
-<a id="usage"/>
 #### Usage
 See **File > Examples > arduino-softpwm > SoftPWM_example** for demonstration of library usage.
 
@@ -68,7 +66,6 @@ Alternatively, you can add `using namespace Palatis;` at the top of the source f
 `SoftPWM.allOff()` - Set the PWM value of all channels to 0.
 
 
-<a id="troubleshooting"/>
 #### Troubleshooting
 - LEDs have a visible flicker, especially noticeable when the LED is moving relative to the viewer.
   - The PWM frequency set in `SoftPWM.begin()` is too low. Use `SoftPWM.printInterruptLoad()` to determine the optimum PWM frequency. You may be able to achieve a higher PWM frequency by setting less PWM levels with `SOFTPWM_DEFINE_OBJECT_WITH_PWM_LEVELS()` or `SOFTPWM_DEFINE_EXTERN_OBJECT_WITH_PWM_LEVELS()`.
