@@ -127,14 +127,15 @@ void loop() {
 
     unsigned long const WAIT = 1000000 / Palatis::SoftPWM.PWMlevels() / 2;
     unsigned long nextMicros = 0;
-    for (unsigned int v = 0; v < Palatis::SoftPWM.PWMlevels() - 1; ++v) {
+    for (int v = 0; v < Palatis::SoftPWM.PWMlevels() - 1; ++v) {
       while (micros() < nextMicros);
       nextMicros = micros() + WAIT;
       Palatis::SoftPWM.set(i, v);
     }
-    for (unsigned int v = Palatis::SoftPWM.PWMlevels() - 1; v >= 0; --v) {
+    for (int v = Palatis::SoftPWM.PWMlevels() - 1; v >= 0; --v) {
       while (micros() < nextMicros);
       nextMicros = micros() + WAIT;
+      Palatis::SoftPWM.set(i, v);
     }
   }
 }
