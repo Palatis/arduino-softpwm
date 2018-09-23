@@ -207,42 +207,44 @@ class CSoftPWM {
         _count = 0;
       asm volatile ("/********** CSoftPWM::update() end **********/");
     }
+		
+    #if defined(HAVE_HWSERIAL0)
+      /* this function is stolen from ShiftPWM :-P
+         http://www.elcojacobs.com/shiftpwm/ */
+      void printInterruptLoad() {
+        unsigned long time1, time2;
 
-    /* this function is stolen from ShiftPWM :-P
-       http://www.elcojacobs.com/shiftpwm/ */
-    void printInterruptLoad() {
-      unsigned long time1, time2;
+        bitSet(TIMSK1, OCIE1A); // enable interrupt
+        time1 = micros();
+        delayMicroseconds(5000);
+        time1 = micros() - time1;
 
-      bitSet(TIMSK1, OCIE1A); // enable interrupt
-      time1 = micros();
-      delayMicroseconds(5000);
-      time1 = micros() - time1;
+        bitClear(TIMSK1, OCIE1A); // disable interrupt
+        time2 = micros();
+        delayMicroseconds(5000);
+        time2 = micros() - time2;
 
-      bitClear(TIMSK1, OCIE1A); // disable interrupt
-      time2 = micros();
-      delayMicroseconds(5000);
-      time2 = micros() - time2;
+        const double load = static_cast<double>(time1 - time2) / time1;
+        const double interrupt_frequency = static_cast<double>(F_CPU) / (OCR1A + 1);
+        const double cycles_per_interrupt = load * F_CPU / interrupt_frequency;
 
-      const double load = static_cast<double>(time1 - time2) / time1;
-      const double interrupt_frequency = static_cast<double>(F_CPU) / (OCR1A + 1);
-      const double cycles_per_interrupt = load * F_CPU / interrupt_frequency;
+        Serial.println(F("SoftPWM::printInterruptLoad():"));
+        Serial.print(F("  Load of interrupt: "));
+        Serial.println(load, 10);
+        Serial.print(F("  Clock cycles per interrupt: "));
+        Serial.println( cycles_per_interrupt );
+        Serial.print(F("  Interrupt frequency: "));
+        Serial.print(interrupt_frequency);
+        Serial.println(F(" Hz"));
+        Serial.print(F("  PWM frequency: "));
+        Serial.print(interrupt_frequency / PWMlevels());
+        Serial.println(F(" Hz"));
+        Serial.print(F("  PWM levels: "));
+        Serial.println(PWMlevels());
 
-      Serial.println(F("SoftPWM::printInterruptLoad():"));
-      Serial.print(F("  Load of interrupt: "));
-      Serial.println(load, 10);
-      Serial.print(F("  Clock cycles per interrupt: "));
-      Serial.println( cycles_per_interrupt );
-      Serial.print(F("  Interrupt frequency: "));
-      Serial.print(interrupt_frequency);
-      Serial.println(F(" Hz"));
-      Serial.print(F("  PWM frequency: "));
-      Serial.print(interrupt_frequency / PWMlevels());
-      Serial.println(F(" Hz"));
-      Serial.print(F("  PWM levels: "));
-      Serial.println(PWMlevels());
-
-      bitSet(TIMSK1, OCIE1A);  // enable interrupt again
-    }
+        bitSet(TIMSK1, OCIE1A);  // enable interrupt again
+      }
+    #endif
 
   private:
     uint8_t _channels[num_channels];
